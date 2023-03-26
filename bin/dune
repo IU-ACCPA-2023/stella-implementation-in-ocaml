@@ -1,0 +1,4 @@
+(executable
+ (public_name stella_implementation_in_ocaml)
+ (name main)
+ (libraries stella))

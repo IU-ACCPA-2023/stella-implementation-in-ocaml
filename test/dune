@@ -1,0 +1,4 @@
+(test
+ (name stella_implementation_in_ocaml))
+(cram
+ (deps %{bin:stella_implementation_in_ocaml}))

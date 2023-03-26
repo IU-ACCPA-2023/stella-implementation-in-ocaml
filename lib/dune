@@ -1,0 +1,9 @@
+(include_subdirs unqualified)
+
+(library
+ (name stella))
+
+; make warnings non-fatal
+(env
+  (dev
+    (flags (:standard -warn-error -A))))
