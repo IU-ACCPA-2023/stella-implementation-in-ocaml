@@ -1,0 +1,25 @@
+name: OCaml CI with Dune
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup dune
+      uses: nmittu/setup-dune@v2
+      with:
+        compiler: "4.12.0"
+    - name: build
+      run: |
+        eval $(opam config env)
+        dune build
+    - name: test
+      run: |
+        dune runtest
