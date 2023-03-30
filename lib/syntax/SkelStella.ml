@@ -55,45 +55,18 @@ and transThrowType (x : throwType) : result = match x with
   | SomeThrowType types -> failure x
 
 
-and transExpr (x : expr) : result = match x with
-    If (expr0, expr1, expr) -> failure x
-  | Let (stellaident, expr0, expr) -> failure x
-  | LessThan (expr0, expr) -> failure x
-  | LessThanOrEqual (expr0, expr) -> failure x
-  | GreaterThan (expr0, expr) -> failure x
-  | GreaterThanOrEqual (expr0, expr) -> failure x
-  | Equal (expr0, expr) -> failure x
-  | NotEqual (expr0, expr) -> failure x
-  | TypeAsc (expr, type') -> failure x
-  | Abstraction (paramdecls, expr) -> failure x
-  | Tuple exprs -> failure x
-  | Record bindings -> failure x
-  | Variant (stellaident, exprdata) -> failure x
-  | Match (expr, matchcases) -> failure x
-  | List exprs -> failure x
-  | Add (expr0, expr) -> failure x
-  | LogicOr (expr0, expr) -> failure x
-  | Multiply (expr0, expr) -> failure x
-  | LogicAnd (expr0, expr) -> failure x
-  | Application (expr, exprs) -> failure x
-  | ConsList (expr0, expr) -> failure x
-  | Head expr -> failure x
-  | IsEmpty expr -> failure x
-  | Tail expr -> failure x
-  | Succ expr -> failure x
-  | LogicNot expr -> failure x
-  | Pred expr -> failure x
-  | IsZero expr -> failure x
-  | Fix expr -> failure x
-  | NatRec (expr0, expr1, expr) -> failure x
-  | Fold (type', expr) -> failure x
-  | Unfold (type', expr) -> failure x
-  | DotRecord (expr, stellaident) -> failure x
-  | DotTuple (expr, integer) -> failure x
-  | ConstTrue  -> failure x
-  | ConstFalse  -> failure x
-  | ConstInt integer -> failure x
-  | Var stellaident -> failure x
+and transType (x : typeT) : result = match x with
+    TypeFun (types, type') -> failure x
+  | TypeRec (stellaident, type') -> failure x
+  | TypeSum (type'0, type') -> failure x
+  | TypeTuple types -> failure x
+  | TypeRecord recordfieldtypes -> failure x
+  | TypeVariant variantfieldtypes -> failure x
+  | TypeList type' -> failure x
+  | TypeBool  -> failure x
+  | TypeNat  -> failure x
+  | TypeUnit  -> failure x
+  | TypeVar stellaident -> failure x
 
 
 and transMatchCase (x : matchCase) : result = match x with
@@ -117,12 +90,15 @@ and transExprData (x : exprData) : result = match x with
 
 and transPattern (x : pattern) : result = match x with
     PatternVariant (stellaident, patterndata) -> failure x
+  | PatternInl pattern -> failure x
+  | PatternInr pattern -> failure x
   | PatternTuple patterns -> failure x
   | PatternRecord labelledpatterns -> failure x
   | PatternList patterns -> failure x
   | PatternCons (pattern0, pattern) -> failure x
   | PatternFalse  -> failure x
   | PatternTrue  -> failure x
+  | PatternUnit  -> failure x
   | PatternInt integer -> failure x
   | PatternSucc pattern -> failure x
   | PatternVar stellaident -> failure x
@@ -136,18 +112,56 @@ and transBinding (x : binding) : result = match x with
     ABinding (stellaident, expr) -> failure x
 
 
-and transType (x : typeT) : result = match x with
-    TypeFun (types, type') -> failure x
-  | TypeRec (stellaident, type') -> failure x
-  | TypeSum (type'0, type') -> failure x
-  | TypeTuple types -> failure x
-  | TypeRecord recordfieldtypes -> failure x
-  | TypeVariant variantfieldtypes -> failure x
-  | TypeList type' -> failure x
-  | TypeBool  -> failure x
-  | TypeNat  -> failure x
-  | TypeUnit  -> failure x
-  | TypeVar stellaident -> failure x
+and transExpr (x : expr) : result = match x with
+    Sequence (expr0, expr) -> failure x
+  | If (expr0, expr1, expr) -> failure x
+  | Let (patternbindings, expr) -> failure x
+  | LetRec (patternbindings, expr) -> failure x
+  | LessThan (expr0, expr) -> failure x
+  | LessThanOrEqual (expr0, expr) -> failure x
+  | GreaterThan (expr0, expr) -> failure x
+  | GreaterThanOrEqual (expr0, expr) -> failure x
+  | Equal (expr0, expr) -> failure x
+  | NotEqual (expr0, expr) -> failure x
+  | TypeAsc (expr, type') -> failure x
+  | Abstraction (paramdecls, expr) -> failure x
+  | Variant (stellaident, exprdata) -> failure x
+  | Match (expr, matchcases) -> failure x
+  | List exprs -> failure x
+  | Add (expr0, expr) -> failure x
+  | Subtract (expr0, expr) -> failure x
+  | LogicOr (expr0, expr) -> failure x
+  | Multiply (expr0, expr) -> failure x
+  | Divide (expr0, expr) -> failure x
+  | LogicAnd (expr0, expr) -> failure x
+  | Application (expr, exprs) -> failure x
+  | DotRecord (expr, stellaident) -> failure x
+  | DotTuple (expr, integer) -> failure x
+  | Tuple exprs -> failure x
+  | Record bindings -> failure x
+  | ConsList (expr0, expr) -> failure x
+  | Head expr -> failure x
+  | IsEmpty expr -> failure x
+  | Tail expr -> failure x
+  | Inl expr -> failure x
+  | Inr expr -> failure x
+  | Succ expr -> failure x
+  | LogicNot expr -> failure x
+  | Pred expr -> failure x
+  | IsZero expr -> failure x
+  | Fix expr -> failure x
+  | NatRec (expr0, expr1, expr) -> failure x
+  | Fold (type', expr) -> failure x
+  | Unfold (type', expr) -> failure x
+  | ConstTrue  -> failure x
+  | ConstFalse  -> failure x
+  | ConstUnit  -> failure x
+  | ConstInt integer -> failure x
+  | Var stellaident -> failure x
+
+
+and transPatternBinding (x : patternBinding) : result = match x with
+    APatternBinding (pattern, expr) -> failure x
 
 
 and transVariantFieldType (x : variantFieldType) : result = match x with

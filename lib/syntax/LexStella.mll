@@ -7,13 +7,13 @@
 open ParStella
 open Lexing
 
-let symbol_table = Hashtbl.create 30
+let symbol_table = Hashtbl.create 33
 let _ = List.iter (fun (kwd, tok) -> Hashtbl.add symbol_table kwd tok)
-                  [("µ", SYMB1);(",", SYMB2);(";", SYMB3);("(", SYMB4);(")", SYMB5);("{", SYMB6);("}", SYMB7);("=", SYMB8);(":", SYMB9);("->", SYMB10);("=>", SYMB11);("<|", SYMB12);("|>", SYMB13);("[", SYMB14);("]", SYMB15);("<", SYMB16);("<=", SYMB17);(">", SYMB18);(">=", SYMB19);("==", SYMB20);("!=", SYMB21);("+", SYMB22);("*", SYMB23);("List::head", SYMB24);("List::isempty", SYMB25);("List::tail", SYMB26);("Nat::pred", SYMB27);("Nat::iszero", SYMB28);("Nat::rec", SYMB29);(".", SYMB30)]
+                  [("µ", SYMB1);(",", SYMB2);(";", SYMB3);("(", SYMB4);(")", SYMB5);("{", SYMB6);("}", SYMB7);("=", SYMB8);(":", SYMB9);("->", SYMB10);("=>", SYMB11);("|", SYMB12);("<|", SYMB13);("|>", SYMB14);("[", SYMB15);("]", SYMB16);("<", SYMB17);("<=", SYMB18);(">", SYMB19);(">=", SYMB20);("==", SYMB21);("!=", SYMB22);("+", SYMB23);("-", SYMB24);("*", SYMB25);("/", SYMB26);(".", SYMB27);("List::head", SYMB28);("List::isempty", SYMB29);("List::tail", SYMB30);("Nat::pred", SYMB31);("Nat::iszero", SYMB32);("Nat::rec", SYMB33)]
 
-let resword_table = Hashtbl.create 31
+let resword_table = Hashtbl.create 33
 let _ = List.iter (fun (kwd, tok) -> Hashtbl.add resword_table kwd tok)
-                  [("language", KW_language);("core", KW_core);("extend", KW_extend);("with", KW_with);("fn", KW_fn);("return", KW_return);("type", KW_type);("inline", KW_inline);("throws", KW_throws);("if", KW_if);("then", KW_then);("else", KW_else);("let", KW_let);("in", KW_in);("record", KW_record);("cons", KW_cons);("false", KW_false);("true", KW_true);("succ", KW_succ);("as", KW_as);("match", KW_match);("or", KW_or);("and", KW_and);("not", KW_not);("fix", KW_fix);("fold", KW_fold);("unfold", KW_unfold);("variant", KW_variant);("Bool", KW_Bool);("Nat", KW_Nat);("Unit", KW_Unit)]
+                  [("language", KW_language);("core", KW_core);("extend", KW_extend);("with", KW_with);("fn", KW_fn);("return", KW_return);("type", KW_type);("inline", KW_inline);("throws", KW_throws);("inl", KW_inl);("inr", KW_inr);("false", KW_false);("true", KW_true);("unit", KW_unit);("succ", KW_succ);("if", KW_if);("then", KW_then);("else", KW_else);("let", KW_let);("in", KW_in);("letrec", KW_letrec);("as", KW_as);("match", KW_match);("or", KW_or);("and", KW_and);("cons", KW_cons);("not", KW_not);("fix", KW_fix);("fold", KW_fold);("unfold", KW_unfold);("Bool", KW_Bool);("Nat", KW_Nat);("Unit", KW_Unit)]
 
 let unescapeInitTail (s:string) : string =
   let rec unesc s = match s with
@@ -52,7 +52,7 @@ let _idchar = _letter | _digit | ['_' '\'']         (*  identifier character *)
 let _universal = _                                  (* universal: any character *)
 
 (* reserved words consisting of special symbols *)
-let rsyms = "µ" | "," | ";" | "(" | ")" | "{" | "}" | "=" | ":" | "->" | "=>" | "<|" | "|>" | "[" | "]" | "<" | "<=" | ">" | ">=" | "==" | "!=" | "+" | "*" | "List::head" | "List::isempty" | "List::tail" | "Nat::pred" | "Nat::iszero" | "Nat::rec" | "."
+let rsyms = "µ" | "," | ";" | "(" | ")" | "{" | "}" | "=" | ":" | "->" | "=>" | "|" | "<|" | "|>" | "[" | "]" | "<" | "<=" | ">" | ">=" | "==" | "!=" | "+" | "-" | "*" | "/" | "." | "List::head" | "List::isempty" | "List::tail" | "Nat::pred" | "Nat::iszero" | "Nat::rec"
 
 (* user-defined token types *)
 let stellaIdent = ('_' | _letter)('!' | '-' | ':' | '?' | '_' | (_digit | _letter)) *
@@ -61,6 +61,8 @@ let extensionName = '#' ('-' | '_' | (_digit | _letter)) +
 (* lexing rules *)
 rule token =
   parse "//" (_ # '\n')*
+                { token lexbuf }
+      | "/*" [^ '*']* '*' ([^ '*' '/'][^ '*']* '*' | '*')* '/'
                 { token lexbuf }
       | rsyms   { let x = lexeme lexbuf in try Hashtbl.find symbol_table x with Not_found -> failwith ("internal lexer error: reserved symbol " ^ x ^ " not found in hashtable") }
       | stellaIdent

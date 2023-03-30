@@ -32,45 +32,18 @@ and throwType =
    NoThrowType
  | SomeThrowType of typeT list
 
-and expr =
-   If of expr * expr * expr
- | Let of stellaIdent * expr * expr
- | LessThan of expr * expr
- | LessThanOrEqual of expr * expr
- | GreaterThan of expr * expr
- | GreaterThanOrEqual of expr * expr
- | Equal of expr * expr
- | NotEqual of expr * expr
- | TypeAsc of expr * typeT
- | Abstraction of paramDecl list * expr
- | Tuple of expr list
- | Record of binding list
- | Variant of stellaIdent * exprData
- | Match of expr * matchCase list
- | List of expr list
- | Add of expr * expr
- | LogicOr of expr * expr
- | Multiply of expr * expr
- | LogicAnd of expr * expr
- | Application of expr * expr list
- | ConsList of expr * expr
- | Head of expr
- | IsEmpty of expr
- | Tail of expr
- | Succ of expr
- | LogicNot of expr
- | Pred of expr
- | IsZero of expr
- | Fix of expr
- | NatRec of expr * expr * expr
- | Fold of typeT * expr
- | Unfold of typeT * expr
- | DotRecord of expr * stellaIdent
- | DotTuple of expr * int
- | ConstTrue
- | ConstFalse
- | ConstInt of int
- | Var of stellaIdent
+and typeT =
+   TypeFun of typeT list * typeT
+ | TypeRec of stellaIdent * typeT
+ | TypeSum of typeT * typeT
+ | TypeTuple of typeT list
+ | TypeRecord of recordFieldType list
+ | TypeVariant of variantFieldType list
+ | TypeList of typeT
+ | TypeBool
+ | TypeNat
+ | TypeUnit
+ | TypeVar of stellaIdent
 
 and matchCase =
    AMatchCase of pattern * expr
@@ -89,12 +62,15 @@ and exprData =
 
 and pattern =
    PatternVariant of stellaIdent * patternData
+ | PatternInl of pattern
+ | PatternInr of pattern
  | PatternTuple of pattern list
  | PatternRecord of labelledPattern list
  | PatternList of pattern list
  | PatternCons of pattern * pattern
  | PatternFalse
  | PatternTrue
+ | PatternUnit
  | PatternInt of int
  | PatternSucc of pattern
  | PatternVar of stellaIdent
@@ -105,18 +81,55 @@ and labelledPattern =
 and binding =
    ABinding of stellaIdent * expr
 
-and typeT =
-   TypeFun of typeT list * typeT
- | TypeRec of stellaIdent * typeT
- | TypeSum of typeT * typeT
- | TypeTuple of typeT list
- | TypeRecord of recordFieldType list
- | TypeVariant of variantFieldType list
- | TypeList of typeT
- | TypeBool
- | TypeNat
- | TypeUnit
- | TypeVar of stellaIdent
+and expr =
+   Sequence of expr * expr
+ | If of expr * expr * expr
+ | Let of patternBinding list * expr
+ | LetRec of patternBinding list * expr
+ | LessThan of expr * expr
+ | LessThanOrEqual of expr * expr
+ | GreaterThan of expr * expr
+ | GreaterThanOrEqual of expr * expr
+ | Equal of expr * expr
+ | NotEqual of expr * expr
+ | TypeAsc of expr * typeT
+ | Abstraction of paramDecl list * expr
+ | Variant of stellaIdent * exprData
+ | Match of expr * matchCase list
+ | List of expr list
+ | Add of expr * expr
+ | Subtract of expr * expr
+ | LogicOr of expr * expr
+ | Multiply of expr * expr
+ | Divide of expr * expr
+ | LogicAnd of expr * expr
+ | Application of expr * expr list
+ | DotRecord of expr * stellaIdent
+ | DotTuple of expr * int
+ | Tuple of expr list
+ | Record of binding list
+ | ConsList of expr * expr
+ | Head of expr
+ | IsEmpty of expr
+ | Tail of expr
+ | Inl of expr
+ | Inr of expr
+ | Succ of expr
+ | LogicNot of expr
+ | Pred of expr
+ | IsZero of expr
+ | Fix of expr
+ | NatRec of expr * expr * expr
+ | Fold of typeT * expr
+ | Unfold of typeT * expr
+ | ConstTrue
+ | ConstFalse
+ | ConstUnit
+ | ConstInt of int
+ | Var of stellaIdent
+
+and patternBinding =
+   APatternBinding of pattern * expr
 
 and variantFieldType =
    AVariantFieldType of stellaIdent * optionalTyping
